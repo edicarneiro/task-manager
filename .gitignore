@@ -1,17 +1,53 @@
-# Ignora arquivos de sistema e de build dos dois projetos
+# ======================
+# Sistema / IDEs
+# ======================
 .DS_Store
-.vscode
-.idea
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
 
-# Frontend (Angular)
-/frontend/node_modules
-/frontend/dist
+# ======================
+# Frontend (Angular/Node)
+# ======================
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.angular/cache/
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+/frontend/pnpm-debug.log*
+/frontend/package-lock.json
+/frontend/yarn.lock
 
-# Backend (Spring Boot)
+# ======================
+# Backend (Spring Boot / Maven)
 /backend/target/
-/backend/!.mvn/wrapper/maven-wrapper.jar
+/backend/logs/
+/backend/*.log
+/backend/.mvn/wrapper/maven-wrapper.jar
 /backend/pom.xml.tag
 /backend/pom.xml.releaseBackup
 /backend/pom.xml.versionsBackup
 /backend/release.properties
-/backend/
+/backend/dependency-reduced-pom.xml
+/backend/build/
+/backend/out/
+
+# ======================
+# Docker / Postgres
+/docker/data/
+/docker/logs/
+/docker/*.pid
+/docker/*.seed
+/docker/*.sql-journal
+
+# ======================
+# Arquivos temporários
+# ======================
+*.tmp
+*.bak
+*.swp
+*.swo
+Thumbs.db
