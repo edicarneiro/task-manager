@@ -1,0 +1,17 @@
+# Ignora arquivos de sistema e de build dos dois projetos
+.DS_Store
+.vscode
+.idea
+
+# Frontend (Angular)
+/frontend/node_modules
+/frontend/dist
+
+# Backend (Spring Boot)
+/backend/target/
+/backend/!.mvn/wrapper/maven-wrapper.jar
+/backend/pom.xml.tag
+/backend/pom.xml.releaseBackup
+/backend/pom.xml.versionsBackup
+/backend/release.properties
+/backend/
