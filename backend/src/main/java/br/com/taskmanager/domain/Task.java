@@ -1,71 +1,31 @@
 package br.com.taskmanager.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
+/**
+ * [DOMÍNIO] - Entidade de Domínio Pura.
+ * Representa o objeto de negócio Task. Não contém anotações de infraestrutura (JPA).
+ */
+@Getter
+@Setter
+@NoArgsConstructor // Necessário para deserialização do Spring
+@AllArgsConstructor
 public class Task {
 
-    @Id
     private UUID id;
     private String title;
     private String description;
-    private boolean completed;
+    private String status; // Alterado de 'completed' para 'status'
     private LocalDateTime createdAt;
 
-    // Construtor vazio para o JPA
-    public Task() {
-    }
-
-    // Construtor para criar uma nova tarefa
-    public Task(String title, String description) {
-        this.id = UUID.randomUUID();
-        this.title = title;
-        this.description = description;
-        this.completed = false;
-        this.createdAt = LocalDateTime.now();
-    }
-
-    // Getters e setters
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isCompleted() {
-        return completed;
-    }
-
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    // Métodos utilitários podem ser colocados aqui
+    public void markAsCompleted() {
+        this.status = "concluida";
     }
 }

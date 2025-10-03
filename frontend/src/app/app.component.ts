@@ -1,27 +1,37 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common'; // IMPORTANTE: Para *ngFor, *ngIf
+import { FormsModule } from '@angular/forms';
 import { Task } from './task.model';
 import { TaskService } from './task.service';
 
 @Component({
   selector: 'app-root',
+  standalone: true, // CRÍTICO: Marca como componente standalone
+  imports: [
+    CommonModule,    // IMPORTANTE: Necessário para diretivas
+    FormsModule      // Para ngModel
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
   tasks: Task[] = [];
-  newTask: Task = { title: '', description: '', status: 'pendente' };
+  newTask: Partial<Task> = { title: '', description: '', status: 'pendente' };
   editingTask: Task | null = null;
 
-  constructor(private taskService: TaskService) { }
+  constructor(private taskService: TaskService) {
+    console.log('🚀 AppComponent inicializado');
+    console.log('🔗 TaskService:', this.taskService);
+  }
 
   ngOnInit(): void {
+    console.log('🔄 ngOnInit chamado - Carregando tasks...');
     this.loadTasks();
   }
 
-  // --- Propriedades de Binding (Para resolver o erro NG5002) ---
-  // A propriedade que o ngModel usará para o Title
+  // --- Propriedades de Binding ---
   get currentTitle(): string {
-    return this.editingTask ? this.editingTask.title : this.newTask.title;
+    return this.editingTask ? this.editingTask.title : (this.newTask.title || '');
   }
   set currentTitle(value: string) {
     if (this.editingTask) {
@@ -31,9 +41,8 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // A propriedade que o ngModel usará para a Description
   get currentDescription(): string {
-    return this.editingTask ? this.editingTask.description : this.newTask.description;
+    return this.editingTask ? this.editingTask.description : (this.newTask.description || '');
   }
   set currentDescription(value: string) {
     if (this.editingTask) {
@@ -43,9 +52,8 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // A propriedade que o ngModel usará para o Status
   get currentStatus(): string {
-    return this.editingTask ? this.editingTask.status : this.newTask.status;
+    return this.editingTask ? this.editingTask.status : (this.newTask.status || 'pendente');
   }
   set currentStatus(value: string) {
     if (this.editingTask) {
@@ -57,15 +65,40 @@ export class AppComponent implements OnInit {
   // ----------------------------------------------------------------
 
   loadTasks(): void {
-    this.taskService.getTasks().subscribe(tasks => {
-      this.tasks = tasks;
+    console.log('🔍 Chamando getTasks()...');
+    this.taskService.getTasks().subscribe({
+      next: (tasks) => {
+        this.tasks = tasks;
+        console.log('✅ Tasks carregadas com sucesso:', tasks);
+      },
+      error: (error) => {
+        console.error('❌ Erro ao carregar tasks:');
+        console.error('  Status:', error.status);
+        console.error('  Message:', error.message);
+        console.error('  URL:', error.url);
+        console.error('  Error completo:', error);
+      }
     });
   }
 
   createTask(): void {
-    this.taskService.createTask(this.newTask).subscribe(() => {
-      this.loadTasks();
-      this.newTask = { title: '', description: '', status: 'pendente' };
+    if (!this.newTask.title || !this.newTask.description) {
+      alert('Preencha todos os campos!');
+      return;
+    }
+
+    console.log('📝 Criando task:', this.newTask);
+
+    this.taskService.createTask(this.newTask as Omit<Task, 'id' | 'createdAt'>).subscribe({
+      next: (createdTask) => {
+        console.log('✅ Task criada com sucesso:', createdTask);
+        this.loadTasks();
+        this.newTask = { title: '', description: '', status: 'pendente' };
+      },
+      error: (error) => {
+        console.error('❌ Erro ao criar task:', error);
+        alert('Erro ao criar task. Veja o console para mais detalhes.');
+      }
     });
   }
 
@@ -75,9 +108,18 @@ export class AppComponent implements OnInit {
 
   updateTask(): void {
     if (this.editingTask && this.editingTask.id) {
-      this.taskService.updateTask(this.editingTask.id, this.editingTask).subscribe(() => {
-        this.loadTasks();
-        this.cancelEdit();
+      console.log('✏️ Atualizando task:', this.editingTask);
+
+      this.taskService.updateTask(this.editingTask.id, this.editingTask).subscribe({
+        next: () => {
+          console.log('✅ Task atualizada com sucesso');
+          this.loadTasks();
+          this.cancelEdit();
+        },
+        error: (error) => {
+          console.error('❌ Erro ao atualizar task:', error);
+          alert('Erro ao atualizar task. Veja o console para mais detalhes.');
+        }
       });
     }
   }
@@ -86,10 +128,23 @@ export class AppComponent implements OnInit {
     this.editingTask = null;
   }
 
-  deleteTask(id: number | undefined): void {
+  deleteTask(id: string | undefined): void {
     if (id) {
-      this.taskService.deleteTask(id).subscribe(() => {
-        this.loadTasks();
+      if (!confirm('Tem certeza que deseja excluir esta tarefa?')) {
+        return;
+      }
+
+      console.log('🗑️ Deletando task:', id);
+
+      this.taskService.deleteTask(id).subscribe({
+        next: () => {
+          console.log('✅ Task deletada com sucesso');
+          this.loadTasks();
+        },
+        error: (error) => {
+          console.error('❌ Erro ao deletar task:', error);
+          alert('Erro ao deletar task. Veja o console para mais detalhes.');
+        }
       });
     }
   }

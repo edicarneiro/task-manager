@@ -7,23 +7,34 @@ import { Task } from './task.model';
   providedIn: 'root'
 })
 export class TaskService {
-  private apiUrl = 'http://backend:8080/api/tasks'; // O endereço do backend no Docker Compose
+  // ALTERADO: Usa caminho relativo - o proxy vai redirecionar para o backend
+  private apiUrl = '/api/tasks';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    console.log('🔧 TaskService construído');
+    console.log('🔗 API URL:', this.apiUrl);
+    console.log('🌐 HttpClient:', this.http);
+  }
 
   getTasks(): Observable<Task[]> {
+    console.log('📡 GET:', this.apiUrl);
     return this.http.get<Task[]>(this.apiUrl);
   }
 
-  createTask(task: Task): Observable<Task> {
+  createTask(task: Omit<Task, 'id' | 'createdAt'>): Observable<Task> {
+    console.log('📡 POST:', this.apiUrl, task);
     return this.http.post<Task>(this.apiUrl, task);
   }
 
-  updateTask(id: number, task: Task): Observable<Task> {
-    return this.http.put<Task>(`${this.apiUrl}/${id}`, task);
+  updateTask(id: string, task: Task): Observable<any> {
+    const url = `${this.apiUrl}/${id}`;
+    console.log('📡 PUT:', url, task);
+    return this.http.put(url, task);
   }
 
-  deleteTask(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  deleteTask(id: string): Observable<any> {
+    const url = `${this.apiUrl}/${id}`;
+    console.log('📡 DELETE:', url);
+    return this.http.delete(url);
   }
 }

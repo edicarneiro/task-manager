@@ -1,8 +1,10 @@
 package br.com.taskmanager.infrastructure.adapter.out;
 
-import br.com.taskmanager.domain.Task;
+import br.com.taskmanager.infrastructure.entities.TaskEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.UUID;
 
-public interface JpaTaskRepository extends JpaRepository<Task, UUID> {
+interface TaskJpaRepository extends JpaRepository<TaskEntity, UUID> {
+
 }

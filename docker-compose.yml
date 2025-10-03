@@ -28,6 +28,12 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    healthcheck:
+      # Verificação que o backend está respondendo antes de liberar o frontend
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   frontend:
     build:
@@ -35,8 +41,12 @@ services:
       dockerfile: Dockerfile
     container_name: task-manager-frontend
     ports:
-      - "4200:80"  # Mapeia a porta local 4200 para a porta 80 do contêiner
+      - "4200:4200"
     environment:
-      API_URL: http://backend:8080
+      # CRÍTICO: Se o Angular fizer requisições de dentro do container para a rede interna Docker,
+      # ele deve usar "http://backend:8080". O problema é se o Angular está tentando usar
+      # esta variável de ambiente como se estivesse no navegador (host).
+      API_URL: http://localhost:8080
     depends_on:
-      - backend
+      backend:
+        condition: service_started
