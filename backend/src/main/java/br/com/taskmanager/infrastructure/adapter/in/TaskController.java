@@ -3,7 +3,9 @@ package br.com.taskmanager.infrastructure.adapter.in;
 import br.com.taskmanager.domain.Task;
 import br.com.taskmanager.domain.ports.in.CreateTaskUseCase;
 import br.com.taskmanager.domain.ports.in.LoadTasksUseCase;
-import br.com.taskmanager.domain.ports.out.TaskRepository;
+import br.com.taskmanager.domain.ports.in.LoadTaskByIdUseCase;
+import br.com.taskmanager.domain.ports.in.UpdateTaskUseCase;
+import br.com.taskmanager.domain.ports.in.DeleteTaskUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,14 +20,20 @@ public class TaskController {
 
     private final CreateTaskUseCase createTaskUseCase;
     private final LoadTasksUseCase loadTasksUseCase;
-    private final TaskRepository taskRepository;
+    private final LoadTaskByIdUseCase loadTaskByIdUseCase;
+    private final UpdateTaskUseCase updateTaskUseCase;
+    private final DeleteTaskUseCase deleteTaskUseCase;
 
-    public TaskController(CreateTaskUseCase createTaskUseCase, 
-                         LoadTasksUseCase loadTasksUseCase,
-                         TaskRepository taskRepository) {
+    public TaskController(CreateTaskUseCase createTaskUseCase,
+                          LoadTasksUseCase loadTasksUseCase,
+                          LoadTaskByIdUseCase loadTaskByIdUseCase,
+                          UpdateTaskUseCase updateTaskUseCase,
+                          DeleteTaskUseCase deleteTaskUseCase) {
         this.createTaskUseCase = createTaskUseCase;
         this.loadTasksUseCase = loadTasksUseCase;
-        this.taskRepository = taskRepository;
+        this.loadTaskByIdUseCase = loadTaskByIdUseCase;
+        this.updateTaskUseCase = updateTaskUseCase;
+        this.deleteTaskUseCase = deleteTaskUseCase;
     }
 
     @PostMapping
@@ -42,7 +50,7 @@ public class TaskController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable UUID id) {
-        Optional<Task> taskOpt = taskRepository.findById(id);
+        Optional<Task> taskOpt = loadTaskByIdUseCase.loadById(id);
         return taskOpt
                 .map(task -> new ResponseEntity<>(task, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -50,14 +58,13 @@ public class TaskController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Task> updateTask(@PathVariable UUID id, @RequestBody Task task) {
-        task.setId(id); // Garante que o ID seja o da URL
-        Task updatedTask = taskRepository.save(task);
+        Task updatedTask = updateTaskUseCase.updateTask(id, task);
         return new ResponseEntity<>(updatedTask, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable UUID id) {
-        taskRepository.deleteById(id);
+        deleteTaskUseCase.deleteTask(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
