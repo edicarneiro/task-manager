@@ -1,52 +1,50 @@
 version: '3.8'
 
 services:
-  database:
-    image: postgres:13
-    container_name: task-manager-db
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: task_manager_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./docker/data/db:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d task_manager_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: task-manager-backend
-    ports:
-      - "8080:8080"
-    depends_on:
-      database:
-        condition: service_healthy
-    healthcheck:
-      # Verificação que o backend está respondendo antes de liberar o frontend
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
+  # --- Serviço do Frontend (Angular) ---
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: task-manager-frontend
+    container_name: taskmanager-frontend
+    # CRÍTICO: Mapeamento de Portas.
+    # A primeira porta (4200) é a porta do SEU HOST (seu computador).
+    # A segunda porta (4200) é a porta interna do container (onde o http-server roda).
     ports:
       - "4200:4200"
-    environment:
-      # CRÍTICO: Se o Angular fizer requisições de dentro do container para a rede interna Docker,
-      # ele deve usar "http://backend:8080". O problema é se o Angular está tentando usar
-      # esta variável de ambiente como se estivesse no navegador (host).
-      API_URL: http://localhost:8080
     depends_on:
-      backend:
-        condition: service_started
+      - backend
+
+  # --- Serviço do Backend (Spring Boot) ---
+  backend:
+    # Assumindo que o código Spring Boot está na pasta 'backend'
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: taskmanager-backend
+    # CRÍTICO: Mapeamento de Portas para o Backend (API)
+    # 8080 do host mapeado para 8080 do container.
+    ports:
+      - "8080:8080"
+    environment:
+      # Variáveis de ambiente para o Spring Boot se conectar ao PostgreSQL
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/taskdb
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      - db
+
+  # --- Serviço do Banco de Dados (PostgreSQL) ---
+  db:
+    image: postgres:14-alpine
+    container_name: taskmanager-db
+    environment:
+      POSTGRES_DB: taskdb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      # Persistência dos dados
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

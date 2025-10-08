@@ -5,7 +5,7 @@
   min-height: 100vh;
   padding: 20px;
   background-color: #f7f7f7;
-  font-family: Arial, sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .container {
@@ -18,16 +18,17 @@
 }
 
 h1 {
-  color: #333;
+  color: #1e3a8a; /* Azul escuro */
   text-align: center;
   margin-bottom: 25px;
+  font-weight: 700;
 }
 
 h2 {
-  color: #555;
+  color: #3b82f6; /* Azul primário */
   margin-top: 20px;
   margin-bottom: 15px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 2px solid #eff6ff;
   padding-bottom: 5px;
 }
 
@@ -38,24 +39,33 @@ h2 {
   gap: 15px;
   margin-bottom: 30px;
   padding: 20px;
-  border: 1px solid #ddd;
+  border: 1px solid #dbeafe; /* Borda azul clara */
   border-radius: 8px;
-  background-color: #fafafa;
+  background-color: #f9fafb;
 }
 
-.task-form input,
-.task-form select {
+input,
+textarea,
+select {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 16px;
-  width: 100%;
-  box-sizing: border-box;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  outline: none;
 }
 
 .form-actions {
   display: flex;
   gap: 10px;
+  margin-top: 10px;
 }
 
 .form-actions button {
@@ -63,26 +73,28 @@ h2 {
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s;
+  font-weight: 600;
+  transition: background-color 0.3s, transform 0.1s;
 }
 
-.form-actions button:nth-child(1) {
-  background-color: #007bff;
+.form-actions button:first-child {
+  background-color: #10b981; /* Verde esmeralda */
   color: white;
 }
 
-.form-actions button:nth-child(1):hover {
-  background-color: #0056b3;
+.form-actions button:first-child:hover {
+  background-color: #059669;
+  transform: translateY(-1px);
 }
 
-.form-actions button:nth-child(2) {
-  background-color: #6c757d;
+.form-actions button.cancel-btn {
+  background-color: #ef4444; /* Vermelho */
   color: white;
 }
 
-.form-actions button:nth-child(2):hover {
-  background-color: #5a6268;
+.form-actions button.cancel-btn:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
 }
 
 /* Lista de Tarefas */
@@ -97,11 +109,17 @@ h2 {
   justify-content: space-between;
   align-items: center;
   padding: 15px;
-  border: 1px solid #eee;
-  border-left: 5px solid #007bff;
+  border: 1px solid #e0e7ff; /* Borda azul clara */
+  border-left: 5px solid #3b82f6;
   border-radius: 8px;
   background-color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .task-info {
@@ -111,12 +129,12 @@ h2 {
 .task-info h3 {
   margin: 0 0 5px 0;
   font-size: 18px;
-  color: #333;
+  color: #1f2937;
 }
 
 .task-info p {
   margin: 0;
-  color: #666;
+  color: #6b7280;
   font-size: 14px;
 }
 
@@ -124,55 +142,184 @@ h2 {
   font-weight: bold;
   margin-left: 15px;
   padding: 5px 10px;
-  border-radius: 4px;
+  border-radius: 9999px; /* Pill shape */
   font-size: 12px;
+  text-transform: uppercase;
 }
 
 /* Estilos de Status */
 .status-pendente {
-  background-color: #ffc107;
-  color: #333;
+  background-color: #fef3c7; /* Amarelo claro */
+  color: #b45309; /* Amarelo escuro */
 }
 
 .status-em-andamento {
-  background-color: #17a2b8;
-  color: white;
+  background-color: #e0f2fe; /* Azul muito claro */
+  color: #0369a1; /* Azul médio */
 }
 
 .status-concluida {
-  background-color: #28a745;
-  color: white;
+  background-color: #d1fae5; /* Verde claro */
+  color: #065f46; /* Verde escuro */
 }
 
 .task-actions {
   display: flex;
-  gap: 8px;
+  gap: 5px;
   margin-left: 20px;
 }
 
 .task-actions button {
   padding: 8px 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  transition: background-color 0.3s;
+  font-weight: 500;
+  transition: opacity 0.3s;
 }
 
-.task-actions button.edit-btn {
-  background-color: #ffc107;
-  color: #333;
+.task-actions button:hover {
+  opacity: 0.8;
 }
 
-.task-actions button.edit-btn:hover {
-  background-color: #e0a800;
+.task-actions .edit-btn {
+  background-color: #fcd34d; /* Amarelo */
+  color: #44403c;
 }
 
-.task-actions button.delete-btn {
-  background-color: #dc3545;
+.task-actions .delete-btn {
+  background-color: #ef4444; /* Vermelho */
   color: white;
 }
 
-.task-actions button.delete-btn:hover {
-  background-color: #c82333;
+/* --- Estilos para o Modal de Erro e Confirmação --- */
+
+.error-message {
+  background-color: #fee2e2; /* Vermelho muito claro */
+  color: #991b1b; /* Vermelho escuro */
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  border: 1px solid #fca5a5;
+}
+
+.error-message .close-btn {
+  background: none;
+  border: none;
+  color: #991b1b;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+/* Modal Backdrop */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  color: #1e3a8a;
+}
+
+.modal-content p {
+  margin: 15px 0 25px 0;
+  font-size: 16px;
+  color: #4b5563;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.modal-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.modal-actions .delete-btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.modal-actions .delete-btn:hover {
+  background-color: #dc2626;
+}
+
+.modal-actions .cancel-btn {
+  background-color: #e5e7eb;
+  color: #4b5563;
+}
+
+.modal-actions .cancel-btn:hover {
+  background-color: #d1d5db;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  color: #6b7280;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+  .task-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .task-info {
+    margin-bottom: 10px;
+  }
+  .task-status {
+    align-self: flex-end;
+    margin-left: 0;
+    margin-top: 5px;
+  }
+  .task-actions {
+    margin-left: 0;
+    margin-top: 10px;
+    width: 100%;
+    justify-content: space-around;
+  }
+  .task-actions button {
+    flex-grow: 1;
+  }
 }

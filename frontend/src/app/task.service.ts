@@ -7,13 +7,13 @@ import { Task } from './task.model';
   providedIn: 'root'
 })
 export class TaskService {
-  // ALTERADO: Usa caminho relativo - o proxy vai redirecionar para o backend
-  private apiUrl = '/api/tasks';
+  // CRÍTICO: Usando o endereço completo do backend (localhost:8080)
+  // para garantir que as chamadas saiam do container frontend e atinjam o backend.
+  private apiUrl = 'http://localhost:8080/api/tasks';
 
   constructor(private http: HttpClient) {
     console.log('🔧 TaskService construído');
-    console.log('🔗 API URL:', this.apiUrl);
-    console.log('🌐 HttpClient:', this.http);
+    console.log('🔗 API URL configurada:', this.apiUrl);
   }
 
   getTasks(): Observable<Task[]> {
