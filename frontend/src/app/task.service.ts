@@ -7,8 +7,7 @@ import { Task } from './task.model';
   providedIn: 'root'
 })
 export class TaskService {
-  // CRÍTICO: Usando o endereço completo do backend (localhost:8080)
-  // para garantir que as chamadas saiam do container frontend e atinjam o backend.
+
   private apiUrl = 'http://localhost:8080/api/tasks';
 
   constructor(private http: HttpClient) {
@@ -31,10 +30,16 @@ export class TaskService {
     console.log('📡 PUT:', url, task);
     return this.http.put(url, task);
   }
+  completeTask(id: String): Observable<Task>{
+    const url = `${this.apiUrl}/${id}`;
+    return this.http.patch<Task>(url,{});
+  }
 
   deleteTask(id: string): Observable<any> {
     const url = `${this.apiUrl}/${id}`;
     console.log('📡 DELETE:', url);
     return this.http.delete(url);
   }
+
+
 }

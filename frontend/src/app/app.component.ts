@@ -1,16 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, TitleCasePipe } from '@angular/common'; // TitleCasePipe adicionado
+import { Component, OnInit, signal, computed } from '@angular/core'; // Adicionado 'computed'
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterOutlet } from '@angular/router'; // FIX 1: Importado para resolver o erro NG8001
 import { Task } from './task.model';
 import { TaskService } from './task.service';
-
-// Interface para o estado de confirmação de exclusão (substituindo confirm())
-interface DeletionConfirmation {
-  show: boolean;
-  taskId: string | null;
-  taskTitle: string | null;
-}
 
 @Component({
   selector: 'app-root',
@@ -18,29 +10,44 @@ interface DeletionConfirmation {
   imports: [
     CommonModule,
     FormsModule,
-    RouterOutlet, // FIX 1: Adicionado RouterOutlet
-    TitleCasePipe // Adicionado TitleCasePipe para formatar o status na view
+    TitleCasePipe
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  tasks: Task[] = [];
-  // FIX 2: Alterado de Partial<Task> para o tipo exato que o service espera.
-  // Isso garante que 'title', 'description' e 'status' sejam strings e não opcionais,
-  // resolvendo o erro TS2345.
-  newTask: Omit<Task, 'id' | 'createdAt'> = { title: '', description: '', status: 'pendente' };
+  // ALTERADO: tasks agora é um signal
+  tasks = signal<Task[]>([]);
+  newTask: Partial<Task> = { title: '', description: '', status: 'pendente' };
   editingTask: Task | null = null;
+  // ALTERADO: isLoading agora é um signal
+  isLoading = signal(true);
 
-  // Variável para mensagens de erro (Substituindo alert())
-  errorMessage: string | null = null;
+  // --- Propriedades do Filtro (NOVO) ---
+  filterStatus = signal<'todos' | 'pendente' | 'em-andamento' | 'concluida'>('todos');
 
-  // Estado para o modal de confirmação de exclusão (Substituindo confirm())
-  deletionConfirmation: DeletionConfirmation = {
-    show: false,
-    taskId: null,
-    taskTitle: null,
-  };
+  // Propriedade Computada para Filtragem e Ordenação
+  // Essa função é executada automaticamente sempre que 'tasks' ou 'filterStatus' mudam.
+  filteredTasks = computed(() => {
+    const currentTasks = this.tasks();
+    const status = this.filterStatus();
+
+    // 1. Filtra as tarefas
+    const filtered = status === 'todos'
+      ? currentTasks
+      : currentTasks.filter(task => task.status === status);
+
+    // 2. Ordena as tarefas: mais recentes primeiro (por createdAt)
+    return filtered.sort((a, b) => {
+      const dateA = new Date(a.createdAt || '').getTime();
+      const dateB = new Date(b.createdAt || '').getTime();
+      return dateB - dateA; // Ordena de forma decrescente (mais recente)
+    });
+  });
+
+  // --- Propriedades do Modal usando Signals ---
+  isDeleteModalOpen = signal(false);
+  taskToDelete = signal<Task | null>(null);
 
   constructor(private taskService: TaskService) {
     console.log('🚀 AppComponent inicializado');
@@ -51,9 +58,10 @@ export class AppComponent implements OnInit {
     this.loadTasks();
   }
 
-  // --- Propriedades de Binding (para manter a lógica de edição/criação) ---
+  // --- Propriedades de Binding (Getters/Setters) ---
+  // Mantidos para compatibilidade com [(ngModel)] no formulário
   get currentTitle(): string {
-    return this.editingTask ? this.editingTask.title : this.newTask.title;
+    return this.editingTask ? this.editingTask.title : (this.newTask.title || '');
   }
   set currentTitle(value: string) {
     if (this.editingTask) {
@@ -64,7 +72,7 @@ export class AppComponent implements OnInit {
   }
 
   get currentDescription(): string {
-    return this.editingTask ? this.editingTask.description : this.newTask.description;
+    return this.editingTask ? this.editingTask.description : (this.newTask.description || '');
   }
   set currentDescription(value: string) {
     if (this.editingTask) {
@@ -75,7 +83,8 @@ export class AppComponent implements OnInit {
   }
 
   get currentStatus(): string {
-    return this.editingTask ? this.editingTask.status : this.newTask.status;
+    const status = this.editingTask ? this.editingTask.status : (this.newTask.status || 'pendente');
+    return status;
   }
   set currentStatus(value: string) {
     if (this.editingTask) {
@@ -84,125 +93,119 @@ export class AppComponent implements OnInit {
       this.newTask.status = value;
     }
   }
-  // ------------------------------------------------------------------------
+  // -------------------------------------------------------------------
 
+  // --- CRUD e Lógica de Estado ---
   loadTasks(): void {
+    this.isLoading.set(true);
     this.taskService.getTasks().subscribe({
       next: (data) => {
-        console.log('✅ Tasks carregadas com sucesso:', data);
-        this.tasks = data;
-        this.errorMessage = null; // Limpa a mensagem de erro ao carregar com sucesso
+        // Define o signal 'tasks', ativando o recálculo de 'filteredTasks'
+        this.tasks.set(data);
+        this.isLoading.set(false);
       },
       error: (error) => {
         console.error('❌ Erro ao carregar tasks:', error);
-        // Substituído alert()
-        this.errorMessage = 'Erro ao carregar tarefas. Verifique o console para detalhes.';
+        this.isLoading.set(false);
       }
     });
   }
 
   createTask(): void {
     if (!this.newTask.title || !this.newTask.description) {
-      this.errorMessage = 'O título e a descrição são obrigatórios.';
+      console.error('❌ Título e Descrição são obrigatórios.');
       return;
     }
-    this.errorMessage = null;
 
-    // taskData é do tipo correto Omit<Task, 'id' | 'createdAt'>, resolvendo o erro TS2345.
-    const taskData: Omit<Task, 'id' | 'createdAt'> = this.newTask;
+    const taskToCreate: Omit<Task, 'id' | 'createdAt'> = {
+      title: this.newTask.title,
+      description: this.newTask.description,
+      status: this.newTask.status || 'pendente',
+    };
 
-    this.taskService.createTask(taskData).subscribe({
-      next: (response) => {
-        console.log('✅ Task criada com sucesso:', response);
+    this.taskService.createTask(taskToCreate).subscribe({
+      next: () => {
         this.loadTasks();
-        // Resetar o formulário
         this.newTask = { title: '', description: '', status: 'pendente' };
       },
       error: (error) => {
         console.error('❌ Erro ao criar task:', error);
-        // Substituído alert()
-        this.errorMessage = 'Erro ao criar tarefa. Verifique o console para detalhes.';
       }
     });
   }
 
   editTask(task: Task): void {
     this.editingTask = { ...task };
-    this.errorMessage = null;
   }
 
   updateTask(): void {
-    if (!this.editingTask || !this.editingTask.id) {
-      this.errorMessage = 'Nenhuma tarefa selecionada para edição.';
-      return;
+    if (this.editingTask && this.editingTask.id) {
+      this.taskService.updateTask(this.editingTask.id, this.editingTask).subscribe({
+        next: () => {
+          this.loadTasks();
+          this.cancelEdit();
+        },
+        error: (error) => {
+          console.error('❌ Erro ao atualizar task:', error);
+        }
+      });
     }
-    this.errorMessage = null;
-
-    console.log('✏️ Atualizando task:', this.editingTask);
-
-    this.taskService.updateTask(this.editingTask.id, this.editingTask).subscribe({
-      next: () => {
-        console.log('✅ Task atualizada com sucesso');
-        this.loadTasks();
-        this.cancelEdit();
-      },
-      error: (error) => {
-        console.error('❌ Erro ao atualizar task:', error);
-        // Substituído alert()
-        this.errorMessage = 'Erro ao atualizar tarefa. Verifique o console para detalhes.';
-      }
-    });
   }
 
   cancelEdit(): void {
     this.editingTask = null;
-    this.errorMessage = null;
+    this.newTask = { title: '', description: '', status: 'pendente' };
   }
 
-  // --- Lógica de Confirmação de Exclusão (Substituindo confirm()) ---
+  // Marcar tarefa como concluída
+  completeTask(task: Task): void {
+    const updatedTask = { ...task, status: 'concluida' };
 
-  // Abre o modal de confirmação
-  confirmDelete(task: Task): void {
-    if (task.id) {
-      this.deletionConfirmation = {
-        show: true,
-        taskId: task.id,
-        taskTitle: task.title,
-      };
-      this.errorMessage = null;
-    } else {
-      this.errorMessage = 'ID da tarefa não encontrado para exclusão.';
+    if (!updatedTask.id) {
+      console.error('❌ Erro: ID da tarefa não encontrado para conclusão.');
+      return;
     }
+
+    this.taskService.updateTask(updatedTask.id, updatedTask).subscribe({
+      next: () => {
+        console.log('✅ Task concluída com sucesso:', updatedTask.title);
+        this.loadTasks();
+      },
+      error: (error) => {
+        console.error('❌ Erro ao concluir task:', error);
+      }
+    });
   }
 
-  // Fecha o modal de confirmação
-  cancelDelete(): void {
-    this.deletionConfirmation = {
-      show: false,
-      taskId: null,
-      taskTitle: null,
-    };
+  // --- Lógica do Modal de Exclusão ---
+  openDeleteModal(task: Task): void {
+    this.taskToDelete.set(task);
+    this.isDeleteModalOpen.set(true);
   }
 
-  // Executa a exclusão após a confirmação
-  executeDelete(): void {
-    const idToDelete = this.deletionConfirmation.taskId;
-    this.cancelDelete(); // Fecha o modal imediatamente
+  closeDeleteModal(): void {
+    this.isDeleteModalOpen.set(false);
+    this.taskToDelete.set(null);
+  }
 
-    if (idToDelete) {
-      console.log('🗑️ Deletando task:', idToDelete);
+  confirmDeleteTask(): void {
+    const task = this.taskToDelete();
+    const id = task?.id;
 
-      this.taskService.deleteTask(idToDelete).subscribe({
-        next: () => {
-          console.log('✅ Task deletada com sucesso');
-          this.loadTasks();
-        },
-        error: (error) => {
-          console.error('❌ Erro ao deletar task:', error);
-          // Substituído alert()
-          this.errorMessage = 'Erro ao deletar tarefa. Verifique o console para detalhes.';
-        }
-      });
+    if (!id) {
+      this.closeDeleteModal();
+      return;
     }
+
+    this.taskService.deleteTask(id).subscribe({
+      next: () => {
+        this.loadTasks();
+        this.closeDeleteModal();
+      },
+      error: (error) => {
+        console.error('❌ Erro ao deletar task:', error);
+        this.closeDeleteModal();
+      }
+    });
   }
 }

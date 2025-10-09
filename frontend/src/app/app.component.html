@@ -1,20 +1,12 @@
 <div class="container">
   <h1>Gerenciador de Tarefas</h1>
 
-  <!-- Área para Mensagens de Erro (Substituindo alert()) -->
-  @if (errorMessage) {
-    <div class="error-message">
-      {{ errorMessage }}
-      <button class="close-btn" (click)="errorMessage = null">Fechar</button>
-    </div>
-  }
-
   <div class="task-form">
     <h2>{{ editingTask ? 'Editar Tarefa' : 'Nova Tarefa' }}</h2>
 
     <!-- Formulário de Nova Tarefa/Edição -->
     <input [(ngModel)]="currentTitle" placeholder="Título" />
-    <textarea [(ngModel)]="currentDescription" placeholder="Descrição" rows="3"></textarea>
+    <input [(ngModel)]="currentDescription" placeholder="Descrição" />
 
     <select [(ngModel)]="currentStatus">
       <!-- Opções de status da tarefa -->
@@ -27,7 +19,7 @@
       <!-- Lógica para mostrar Adicionar ou Salvar/Cancelar -->
       @if (!editingTask) {
         <!-- Botão Adicionar Tarefa (aparece se não estiver editando) -->
-        <button (click)="createTask()" [disabled]="!currentTitle || !currentDescription">Adicionar Tarefa</button>
+        <button (click)="createTask()">Adicionar Tarefa</button>
       } @else {
         <!-- Botões Salvar e Cancelar (aparecem se estiver editando) -->
         <button (click)="updateTask()">Salvar Alterações</button>
@@ -38,51 +30,60 @@
 
   <h2>Tarefas Atuais</h2>
 
-  @if (tasks.length === 0) {
-    <div class="empty-state">Nenhuma tarefa encontrada. Adicione uma nova tarefa acima.</div>
-  } @else {
-    <div class="task-list">
-      <!-- Lista de Tarefas (Itera sobre a coleção 'tasks') -->
-      @for (task of tasks; track task.id) {
-        <div class="task-card">
-          <div class="task-info">
-            <h3>{{ task.title }}</h3>
-            <p>{{ task.description }}</p>
-          </div>
+  <!-- NOVO SELETOR DE FILTRO -->
+  <div class="filter-controls">
+    <label for="filterStatus">Filtrar por Status:</label>
+    <!-- Usa 'filterStatus()' para ler o valor, e 'filterStatus.set($event)' para escrever no signal -->
+    <select id="filterStatus" [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)">
+      <option value="todos">Mostrar Todos</option>
+      <option value="pendente">Pendente</option>
+      <option value="em-andamento">Em Andamento</option>
+      <option value="concluida">Concluída</option>
+    </select>
+  </div>
 
-          <!-- Status da Tarefa com classe CSS dinâmica -->
-          <!-- Usando TitleCasePipe (importado no TS) para melhor exibição -->
-          <div class="task-status status-{{ task.status.toLowerCase().replace(' ', '-') }}">
-            {{ task.status | titlecase }}
-          </div>
-
-          <div class="task-actions">
-            <!-- Botões de Ação para cada tarefa -->
-            <button class="edit-btn" (click)="editTask(task)">Editar</button>
-            <!-- ALTERADO: Chamando confirmDelete no lugar de deleteTask direto -->
-            <button class="delete-btn" (click)="confirmDelete(task)">Deletar</button>
-          </div>
+  <div class="task-list">
+    <!-- CORREÇÃO: Usando a propriedade COMPUTADA 'filteredTasks()' como o array iterável -->
+    @for (task of filteredTasks(); track task.id) {
+      <div class="task-card">
+        <div class="task-info">
+          <h3>{{ task.title }}</h3>
+          <p>{{ task.description }}</p>
         </div>
-      }
-    </div>
-  }
 
-  <!-- FIX 3: Modal de Confirmação de Exclusão (Substituindo confirm()) -->
-  @if (deletionConfirmation.show) {
-    <div class="modal-backdrop">
-      <div class="modal-content">
-        <h3>Confirmar Exclusão</h3>
-        <p>Tem certeza que deseja excluir a tarefa: <strong>{{ deletionConfirmation.taskTitle }}</strong>?</p>
-        <div class="modal-actions">
-          <button class="delete-btn" (click)="executeDelete()">Sim, Excluir</button>
-          <button class="cancel-btn" (click)="cancelDelete()">Cancelar</button>
+        <!-- Status da Tarefa com classe CSS dinâmica -->
+        <div class="task-status status-{{ task.status }}">
+          {{ task.status | titlecase }}
+        </div>
+
+        <div class="task-actions">
+          <!-- BOTÃO COMPLEMENTAR: Concluir (aparece apenas se não estiver concluída) -->
+          @if (task.status !== 'concluida') {
+            <button class="complete-btn" (click)="completeTask(task)">Concluir</button>
+          }
+          <!-- Botões de Ação para cada tarefa -->
+          <button class="edit-btn" (click)="editTask(task)">Editar</button>
+          <!-- Chama o modal em vez da exclusão direta -->
+          <button class="delete-btn" (click)="openDeleteModal(task)">Excluir</button>
         </div>
       </div>
-    </div>
-  }
-
-  <!-- router-outlet é necessário se você tiver rotas definidas em app.routes.ts.
-       O import em app.component.ts resolve o erro NG8001.
-       Se a tag <router-outlet /> estivesse na linha 94, ela seria renderizada aqui: -->
-  <router-outlet />
+    } @empty {
+      <!-- CORREÇÃO: O empty block também deve usar 'filteredTasks' indiretamente (ele já está no @for) -->
+      <p class="no-tasks">Nenhuma tarefa encontrada. Que tal criar uma?</p>
+    }
+  </div>
 </div>
+
+<!-- Modal de Confirmação de Exclusão -->
+@if (isDeleteModalOpen()) {
+  <div class="modal-backdrop">
+    <div class="modal-content">
+      <h3>Confirmação de Exclusão</h3>
+      <p>Tem certeza que deseja excluir a tarefa: <strong>"{{ taskToDelete()?.title }}"</strong>?</p>
+      <div class="modal-actions">
+        <button class="cancel-btn" (click)="closeDeleteModal()">Cancelar</button>
+        <button class="delete-btn" (click)="confirmDeleteTask()">Sim, Excluir</button>
+      </div>
+    </div>
+  </div>
+}

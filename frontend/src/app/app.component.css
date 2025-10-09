@@ -14,7 +14,7 @@
   background-color: white;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 h1 {
@@ -25,11 +25,12 @@ h1 {
 }
 
 h2 {
-  color: #3b82f6; /* Azul primário */
+  color: #3b82f6; /* Azul médio */
   margin-top: 20px;
   margin-bottom: 15px;
-  border-bottom: 2px solid #eff6ff;
+  border-bottom: 2px solid #eff6ff; /* Linha sutil */
   padding-bottom: 5px;
+  font-weight: 600;
 }
 
 /* Formulário de Criação/Edição */
@@ -39,27 +40,27 @@ h2 {
   gap: 15px;
   margin-bottom: 30px;
   padding: 20px;
-  border: 1px solid #dbeafe; /* Borda azul clara */
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   background-color: #f9fafb;
 }
 
-input,
-textarea,
-select {
+.task-form input,
+.task-form select,
+.task-form textarea {
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 16px;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
+.task-form input:focus,
+.task-form select:focus,
+.task-form textarea:focus {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
   outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .form-actions {
@@ -69,32 +70,28 @@ select:focus {
 }
 
 .form-actions button {
-  padding: 10px 20px;
+  flex-grow: 1;
+  padding: 10px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 16px;
   font-weight: 600;
-  transition: background-color 0.3s, transform 0.1s;
-}
-
-.form-actions button:first-child {
-  background-color: #10b981; /* Verde esmeralda */
+  transition: background-color 0.2s;
+  background-color: #3b82f6; /* Azul primário */
   color: white;
 }
 
-.form-actions button:first-child:hover {
-  background-color: #059669;
-  transform: translateY(-1px);
+.form-actions button:hover {
+  background-color: #2563eb;
 }
 
-.form-actions button.cancel-btn {
-  background-color: #ef4444; /* Vermelho */
-  color: white;
+.form-actions .cancel-btn {
+  background-color: #9ca3af; /* Cinza */
 }
 
-.form-actions button.cancel-btn:hover {
-  background-color: #dc2626;
-  transform: translateY(-1px);
+.form-actions .cancel-btn:hover {
+  background-color: #6b7280;
 }
 
 /* Lista de Tarefas */
@@ -109,17 +106,11 @@ select:focus {
   justify-content: space-between;
   align-items: center;
   padding: 15px;
-  border: 1px solid #e0e7ff; /* Borda azul clara */
+  border: 1px solid #d1d5db;
   border-left: 5px solid #3b82f6;
   border-radius: 8px;
   background-color: white;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s;
-}
-
-.task-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .task-info {
@@ -139,34 +130,35 @@ select:focus {
 }
 
 .task-status {
-  font-weight: bold;
+  font-weight: 600;
   margin-left: 15px;
   padding: 5px 10px;
   border-radius: 9999px; /* Pill shape */
   font-size: 12px;
-  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-/* Estilos de Status */
+/* Estilos de Status (Tailwind-like colors) */
 .status-pendente {
-  background-color: #fef3c7; /* Amarelo claro */
-  color: #b45309; /* Amarelo escuro */
+  background-color: #fef3c7;
+  color: #92400e;
 }
 
 .status-em-andamento {
-  background-color: #e0f2fe; /* Azul muito claro */
-  color: #0369a1; /* Azul médio */
+  background-color: #dbeafe;
+  color: #1e40af;
 }
 
 .status-concluida {
-  background-color: #d1fae5; /* Verde claro */
-  color: #065f46; /* Verde escuro */
+  background-color: #d1fae5;
+  color: #065f46;
 }
 
+/* Botões de Ação da Lista */
 .task-actions {
   display: flex;
-  gap: 5px;
-  margin-left: 20px;
+  gap: 8px;
+  margin-left: 15px;
 }
 
 .task-actions button {
@@ -176,97 +168,106 @@ select:focus {
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: opacity 0.3s;
+  transition: background-color 0.2s;
+  white-space: nowrap;
 }
 
-.task-actions button:hover {
-  opacity: 0.8;
+.complete-btn {
+  background-color: #10b981; /* Verde */
+  color: white;
 }
 
-.task-actions .edit-btn {
-  background-color: #fcd34d; /* Amarelo */
-  color: #44403c;
+.complete-btn:hover {
+  background-color: #059669;
 }
 
-.task-actions .delete-btn {
+.edit-btn {
+  background-color: #f97316; /* Laranja */
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #ea580c;
+}
+
+.delete-btn {
   background-color: #ef4444; /* Vermelho */
   color: white;
 }
 
-/* --- Estilos para o Modal de Erro e Confirmação --- */
+.delete-btn:hover {
+  background-color: #dc2626;
+}
 
-.error-message {
-  background-color: #fee2e2; /* Vermelho muito claro */
-  color: #991b1b; /* Vermelho escuro */
-  padding: 15px;
+.no-tasks {
+  text-align: center;
+  color: #9ca3af;
+  padding: 20px;
+  font-style: italic;
+  background-color: #f3f4f6;
   border-radius: 8px;
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 500;
-  border: 1px solid #fca5a5;
 }
 
-.error-message .close-btn {
-  background: none;
-  border: none;
-  color: #991b1b;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-
-/* Modal Backdrop */
+/* --- ESTILOS DO MODAL (ADICIONADOS) --- */
 .modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4); /* Fundo semi-transparente */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
-/* Modal Content */
 .modal-content {
   background-color: white;
   padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   width: 90%;
   max-width: 400px;
-  text-align: center;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .modal-content h3 {
+  color: #ef4444;
   margin-top: 0;
-  color: #1e3a8a;
+  border-bottom: 1px solid #fecaca;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .modal-content p {
-  margin: 15px 0 25px 0;
-  font-size: 16px;
+  line-height: 1.5;
   color: #4b5563;
+  margin-bottom: 25px;
 }
 
 .modal-actions {
   display: flex;
-  justify-content: center;
-  gap: 15px;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .modal-actions button {
-  padding: 10px 20px;
+  padding: 10px 15px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
+}
+
+.modal-actions .cancel-btn {
+  background-color: #9ca3af;
+  color: white;
+}
+
+.modal-actions .cancel-btn:hover {
+  background-color: #6b7280;
 }
 
 .modal-actions .delete-btn {
@@ -278,48 +279,13 @@ select:focus {
   background-color: #dc2626;
 }
 
-.modal-actions .cancel-btn {
-  background-color: #e5e7eb;
-  color: #4b5563;
-}
-
-.modal-actions .cancel-btn:hover {
-  background-color: #d1d5db;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 40px;
-  border: 1px dashed #d1d5db;
-  border-radius: 8px;
-  color: #6b7280;
-  font-size: 16px;
-  margin-top: 20px;
-}
-
-@media (max-width: 600px) {
-  .container {
-    padding: 20px;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
   }
-  .task-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .task-info {
-    margin-bottom: 10px;
-  }
-  .task-status {
-    align-self: flex-end;
-    margin-left: 0;
-    margin-top: 5px;
-  }
-  .task-actions {
-    margin-left: 0;
-    margin-top: 10px;
-    width: 100%;
-    justify-content: space-around;
-  }
-  .task-actions button {
-    flex-grow: 1;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
