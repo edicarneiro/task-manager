@@ -1,0 +1,19 @@
+<div class="task-card">
+  <div class="task-info">
+    <h3>{{ task.title }}</h3>
+    <p>{{ task.description }}</p>
+    <span class="task-created">Criado em: {{ task.createdAt | date:'short' }}</span>
+  </div>
+
+  <div class="task-status status-{{ task.status }}">
+    {{ task.status | titlecase }}
+  </div>
+
+  <div class="task-actions">
+    @if (task.status !== 'concluida') {
+      <button class="complete-btn" (click)="complete.emit(task)">Concluir</button>
+    }
+    <button class="edit-btn" (click)="edit.emit(task)">Editar</button>
+    <button class="delete-btn" (click)="delete.emit(task)">Excluir</button>
+  </div>
+</div>
