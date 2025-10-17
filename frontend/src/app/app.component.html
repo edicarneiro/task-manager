@@ -1,26 +1,23 @@
+<header class="top-header">
+  <div class="header-content">
+    <h1>📋 Gerenciador de Tarefas</h1>
+    <button mat-raised-button color="primary" (click)="openTaskForm()">
+      + Nova Tarefa
+    </button>
+  </div>
+</header>
 
-<div class="container">
-  <h1>Gerenciador de Tarefas</h1>
-
-  @if (isLoading()) {
-    <p class="loading">Carregando tarefas...</p>
-  }
-
-  <app-task-form
-    [editingTask]="editingTask"
-    (taskSubmit)="handleTaskSubmit($event)"
-    (taskCancel)="cancelEdit()"
-  />
-
-  <app-task-list
-    [tasks]="filteredTasks()"
-    [filterStatus]="filterStatus"
-    [searchTerm]="searchTerm"
-    (filterChange)="handleFilterChange($event)"
-    (searchChange)="searchTerm.set($event)"
-    (editTask)="editTask($event)"
-    (completeTask)="completeTask($event)"
-    (deleteTask)="openDeleteModal($event)"
-  />
-
-</div>
+<main class="container">
+  <div class="list-section">
+    <app-task-list
+      [tasks]="filteredTasks()"
+      [filterStatus]="filterStatus"
+      [searchTerm]="searchTerm"
+      (filterChange)="updateFilter($event)"
+      (searchChange)="updateSearchTerm($event)"
+      (editTask)="editTask($event)"
+      (completeTask)="completeTask($event)"
+      (deleteTask)="deleteTaskById($event)"
+    ></app-task-list>
+  </div>
+</main>

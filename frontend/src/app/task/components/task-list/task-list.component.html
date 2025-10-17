@@ -1,28 +1,28 @@
-<h2>Tarefas Atuais</h2>
-
 <div class="controls-container">
-  <div class="search-controls">
-    <input
-      type="text"
-      [ngModel]="searchTerm()"
-      (ngModelChange)="searchTerm.set($event); searchChange.emit($event)"
-      placeholder="Pesquisar por título ou descrição..."
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Pesquisar por título ou descrição</mat-label>
+    <input matInput
+           [ngModel]="searchTerm()"
+           (ngModelChange)="searchTerm.set($event); searchChange.emit($event)"
+           placeholder="Título ou Descrição"
+           aria-label="Pesquisar Tarefas"
     />
-  </div>
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
 
-  <div class="filter-controls">
-    <label for="filterStatus">Filtrar por Status:</label>
-    <select
-      id="filterStatus"
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Filtrar por Status</mat-label>
+    <mat-select
       [ngModel]="filterStatus()"
       (ngModelChange)="filterStatus.set($event); filterChange.emit($event)"
+      aria-label="Filtrar por Status"
     >
-      <option value="todos">Mostrar Todos</option>
-      <option value="pendente">Pendente</option>
-      <option value="em-andamento">Em Andamento</option>
-      <option value="concluida">Concluída</option>
-    </select>
-  </div>
+      <mat-option value="todos">Mostrar Todos</mat-option>
+      <mat-option value="pendente">Pendente</mat-option>
+      <mat-option value="em-andamento">Em Andamento</mat-option>
+      <mat-option value="concluida">Concluída</mat-option>
+    </mat-select>
+  </mat-form-field>
 </div>
 
 <div class="task-list">
@@ -42,10 +42,10 @@
   <div class="modal-backdrop">
     <div class="modal-content">
       <h3>Confirmação de Exclusão</h3>
-      <p>Tem certeza que deseja excluir a tarefa: <strong>"{{ taskToDelete()?.title }}"</strong>?</p>
+      <p>Tem certeza que deseja excluir a tarefa: <strong>{{ taskToDelete()?.title }}</strong>?</p>
       <div class="modal-actions">
+        <button class="delete-btn" (click)="confirmDelete()">Excluir</button>
         <button class="cancel-btn" (click)="closeDeleteModal()">Cancelar</button>
-        <button class="delete-btn" (click)="confirmDelete()">Sim, Excluir</button>
       </div>
     </div>
   </div>

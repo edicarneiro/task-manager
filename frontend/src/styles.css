@@ -1,1 +1,57 @@
-/* You can add global styles to this file, and also import other style files */
+/* ---------------------------------------------------------------------- */
+/* 1. VARIÁVEIS DO TEMA ESCURO (HIGH-CONTRAST DARK MODE) */
+/* ---------------------------------------------------------------------- */
+:root {
+  /* Cores de Fundo (Padrão Dark Mode) */
+  --background-color: #121212;
+  --surface-color: #2c2c2c; /* Fundo de Cards e Containers */
+  --text-color: #e0e0e0;
+  --secondary-text-color: #aaaaaa;
+
+  /* NOVA PALETA CIANO/AZUL */
+  --primary-color: #03dac6; /* Ciano Vibrante (Ação principal) */
+  --primary-darker: #1f3041; /* Azul Escuro Sólido (Header/Barra) */
+
+  /* Cores de Feedback (UX) */
+  --success-color: #66bb6a; /* Verde Suave (Concluída) */
+  --warning-color: #ffca28; /* Amarelo (Pendente) */
+  --error-color: #ef5350; /* Vermelho (Erro/Excluir) */
+}
+
+/* ---------------------------------------------------------------------- */
+/* 2. APLICAÇÃO DO TEMA E ESTRUTURA BASE (Mantido o Layout Lateral) */
+/* ---------------------------------------------------------------------- */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Garante que o Angular Material use o fundo Dark Mode */
+.mat-app-background {
+  background-color: var(--background-color);
+}
+
+/* Botões Primários (Ação) */
+.mat-raised-button.mat-primary,
+.mat-flat-button.mat-primary {
+  background-color: var(--primary-color);
+  color: #121212; /* Texto escuro no botão claro */
+}
+
+/* Fundo dos Cards e Containers Principais */
+.mat-card,
+.list-section,
+.mat-dialog-container {
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Foco dos Inputs (Ciano) */
+.mat-form-field.mat-focused .mat-form-field-ripple,
+.mat-form-field.mat-focused .mat-form-field-label {
+  color: var(--primary-color);
+}

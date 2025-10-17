@@ -1,31 +1,43 @@
-<div class="task-form">
-  <h2>{{ editingTask ? 'Editar Tarefa' : 'Nova Tarefa' }}</h2>
+<h2 mat-dialog-title>
+  {{ editingTask ? 'Editar Tarefa' : 'Nova Tarefa' }}
+</h2>
 
-  <input
-    [(ngModel)]="formData.title"
-    placeholder="Título"
-    required
-    aria-label="Título da Tarefa"
-  />
-  <input
-    [(ngModel)]="formData.description"
-    placeholder="Descrição"
-    required
-    aria-label="Descrição da Tarefa"
-  />
+<div mat-dialog-content>
+  <mat-form-field appearance="outline">
+    <mat-label>Título</mat-label>
+    <input matInput
+           [(ngModel)]="formData.title"
+           placeholder="Título da Tarefa"
+           required
+           aria-label="Título da Tarefa"
+    >
+  </mat-form-field>
 
-  <select [(ngModel)]="formData.status" aria-label="Status da Tarefa">
-    <option value="pendente">Pendente</option>
-    <option value="em-andamento">Em Andamento</option>
-    <option value="concluida">Concluída</option>
-  </select>
+  <mat-form-field appearance="outline">
+    <mat-label>Descrição</mat-label>
+    <input matInput
+           [(ngModel)]="formData.description"
+           placeholder="Descrição da Tarefa"
+           required
+           aria-label="Descrição da Tarefa"
+    >
+  </mat-form-field>
 
-  <div class="form-actions">
-    @if (!editingTask) {
-      <button (click)="submitForm()">Adicionar Tarefa</button>
-    } @else {
-      <button (click)="submitForm()">Salvar Alterações</button>
-      <button class="cancel-btn" (click)="cancelEdit()">Cancelar</button>
-    }
-  </div>
+  <mat-form-field appearance="outline">
+    <mat-label>Status</mat-label>
+    <mat-select [(ngModel)]="formData.status" aria-label="Status da Tarefa">
+      <mat-option value="pendente">Pendente</mat-option>
+      <mat-option value="em-andamento">Em Andamento</mat-option>
+      <mat-option value="concluida">Concluída</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions class="form-actions">
+  @if (!editingTask) {
+    <button mat-raised-button color="primary" (click)="submitForm()">Adicionar Tarefa</button>
+  } @else {
+    <button mat-raised-button color="primary" (click)="submitForm()">Salvar Alterações</button>
+    <button mat-flat-button class="cancel-btn" (click)="cancelEdit()">Cancelar</button>
+  }
 </div>

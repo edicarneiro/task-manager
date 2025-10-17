@@ -1,12 +1,23 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Task } from '../../models/task.model';
+import {Component, Inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {Task} from '../../models/task.model';
+import {MatButtonModule} from '@angular/material/button'; // Botões Material
+import {
+  MAT_DIALOG_DATA,
+  MatDialogActions,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle
+} from '@angular/material/dialog'; // Para o Dialog
+import {MatFormFieldModule} from '@angular/material/form-field'; // Campos Material
+import {MatInputModule} from '@angular/material/input'; // Inputs Material
+import {MatSelectModule} from '@angular/material/select'; // Select Material
 
 /**
  * Interface para os dados do formulário que serão emitidos.
  */
-interface TaskFormData {
+export interface TaskFormData {
   id?: string;
   title: string;
   description: string;
@@ -16,25 +27,35 @@ interface TaskFormData {
 @Component({
   selector: 'app-task-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions
+  ],
   templateUrl:'./task-form.component.html',
   styleUrl: './task-form.component.css',
 })
-export class TaskFormComponent implements OnInit, OnChanges {
-  @Input() editingTask: Task | null = null;
-  @Output() taskSubmit = new EventEmitter<TaskFormData>();
-  @Output() taskCancel = new EventEmitter<void>();
+export class TaskFormComponent implements OnInit {
+
+  editingTask: Task | null = null;
 
   formData: TaskFormData = { title: '', description: '', status: 'pendente' };
 
-  ngOnInit(): void {
-    this.updateFormData(this.editingTask);
+  constructor(
+    public dialogRef: MatDialogRef<TaskFormComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { editingTask: Task | null }
+  ) {
+    this.editingTask = data?.editingTask || null;
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['editingTask']) {
-      this.updateFormData(this.editingTask);
-    }
+  ngOnInit(): void {
+    this.updateFormData(this.editingTask);
   }
 
   private updateFormData(task: Task | null): void {
@@ -57,20 +78,15 @@ export class TaskFormComponent implements OnInit, OnChanges {
   submitForm(): void {
     if (!this.formData.title || !this.formData.description) {
       console.error('Por favor, preencha o título e a descrição da tarefa.');
+      // NOVO: Não submete se o formulário for inválido
       return;
     }
-    this.taskSubmit.emit(this.formData);
-    if (!this.formData.id) {
-      this.clearForm();
-    }
+    // NOVO: Emite os dados para o componente pai e fecha o modal
+    this.dialogRef.close(this.formData);
   }
 
   cancelEdit(): void {
-    this.taskCancel.emit();
-    this.clearForm();
-  }
-
-  private clearForm(): void {
-    this.formData = { title: '', description: '', status: 'pendente' };
+    // NOVO: Apenas fecha o modal (retorna 'undefined' para o pai, que ignora a submissão)
+    this.dialogRef.close();
   }
 }
