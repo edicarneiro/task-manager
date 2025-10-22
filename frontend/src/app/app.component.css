@@ -1,51 +1,20 @@
-/* ---------------------------------------------------------------------- */
-/* NOVO HEADER HORIZONTAL (TOP BAR) */
-/* ---------------------------------------------------------------------- */
 .top-header {
   background-color: var(--primary-darker);
-  /* Altura fixa */
-  height: 64px;
-  width: 100%;
-  position: fixed; /* Mantenha fixo no topo */
-  top: 0;
-  left: 0;
-  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.4);
-  z-index: 10;
+  height: auto;
 }
 
 .header-content {
-  max-width: 1200px; /* Largura máxima para centralizar */
-  margin: 0 auto;
-  height: 100%;
+  padding: 0 40px;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Espaça o título e o botão */
-  padding: 0 20px;
+  justify-content: space-between;
 }
 
-.top-header h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-color); /* Texto Branco */
-  margin: 0;
-  display: flex;
-  align-items: center;
-}
-
-
-/* ---------------------------------------------------------------------- */
-/* CORREÇÃO DO CONTAINER PRINCIPAL */
-/* ---------------------------------------------------------------------- */
 .container {
-  /* Largura do Container Principal (Centraliza o conteúdo) */
-  width: 100%;
   max-width: 900px;
-  /* MUDANÇA CRUCIAL: Remove margem lateral, adiciona margem do topo para o header */
-  margin: 84px auto 20px auto; /* 64px (header) + 20px (espaçamento) */
-  padding: 30px;
-  border-radius: 12px;
+  margin: 84px auto 20px auto;
+  padding: 20px 30px;
+  border-radius: 8px;
   background-color: var(--surface-color);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
-
-/* REMOVA os estilos do .main-header antigo e do .header-controls que não são mais necessários */

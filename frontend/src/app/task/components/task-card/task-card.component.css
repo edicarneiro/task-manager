@@ -47,7 +47,7 @@
 }
 .status-pendente .task-status-chip {
   background-color: var(--warning-color);
-  color: #121212;
+  color: #ffca28;
 }
 
 /* Em Andamento (Ciano - Primário) */
@@ -56,7 +56,7 @@
 }
 .status-em-andamento .task-status-chip {
   background-color: var(--primary-color);
-  color: #121212;
+  color: #03dac6;
 }
 
 /* Concluída (Verde - Sucesso) */
@@ -65,10 +65,93 @@
 }
 .status-concluida .task-status-chip {
   background-color: var(--success-color);
-  color: #121212;
+  color: #66bb6a;
 }
 
 /* Botão Excluir (Erro) */
 .mat-icon-button.mat-warn {
   color: var(--error-color) !important;
+}
+
+mat-card {
+  /* Adiciona mais espaço entre os cards */
+  margin-bottom: 15px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* HIERARQUIA VISUAL DENTRO DO CARD */
+/* ---------------------------------------------------------------------- */
+
+/* Destaca o Título */
+.mat-card-header .mat-card-title {
+  font-size: 1.2rem; /* Aumenta um pouco mais */
+  font-weight: 700; /* Mais destaque */
+  color: var(--text-color);
+  margin-bottom: 2px;
+}
+
+/* Garante que o subtítulo (data) fique sutil */
+.mat-card-header .mat-card-subtitle {
+  font-size: 0.8rem;
+  color: var(--secondary-text-color);
+}
+
+/* Espaçamento e Alinhamento do Content */
+.task-content-wrapper {
+  /* Adiciona mais padding interno para afastar o conteúdo das bordas do card */
+  padding-top: 15px;
+  padding-bottom: 15px;
+  margin-bottom: 0;
+}
+
+.task-description {
+  /* Adiciona mais espaçamento acima da descrição para separá-la do subtítulo */
+  margin-top: 5px;
+  color: var(--secondary-text-color);
+  white-space: pre-wrap;
+}
+
+/* Garante que o ícone e o texto do header se alinhem corretamente */
+.custom-card-header {
+  align-items: flex-start; /* Alinha o avatar e o chip com o topo */
+}
+.mat-card-header .mat-card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 2px;
+}
+
+.mat-card-header .mat-card-subtitle {
+  font-size: 0.8rem;
+  color: var(--secondary-text-color);
+}
+
+.task-status-chip {
+  margin-left: auto;
+  align-self: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.status-concluida .task-status-chip {
+  background-color: var(--success-color);
+  color: #121212;
+}
+
+.status-pendente .task-status-chip {
+  background-color: var(--warning-color);
+  color: #121212;
+}
+
+.status-em-andamento .task-status-chip {
+  background-color: var(--primary-color);
+  color: #121212;
+}
+
+.mat-card {
+  margin-bottom: 15px;
 }

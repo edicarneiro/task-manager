@@ -2,27 +2,17 @@
   display: flex;
   gap: 20px;
   margin-bottom: 20px;
-  padding: 0; /* Remove padding */
-  border-bottom: none; /* Remove a linha de separação, o Material cuida disso. */
+  padding: 0;
 }
 
 .search-field {
   flex-grow: 1;
   max-width: 400px;
+  padding-top: 5px;
 }
 
 .filter-field {
   flex-shrink: 0;
   width: 200px;
-}
-.controls-container {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
-  /* ... (outros estilos) ... */
-}
-
-/* Adiciona um pouco de padding interno aos campos de filtro */
-.search-field, .filter-field {
   padding-top: 5px;
 }

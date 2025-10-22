@@ -16,6 +16,6 @@ mat-form-field {
 }
 
 .cancel-btn {
-  background-color: #f44336;
+  background-color: var(--error-color);
   color: white;
 }
